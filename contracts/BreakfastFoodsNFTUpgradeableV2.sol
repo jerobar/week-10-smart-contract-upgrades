@@ -3,18 +3,18 @@
 pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/utils/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 
 /**
- * @dev Upgradeable implementation of the ERC721 Token 'BreakfastFoodsNFT'.
+ * @dev Upgraded implementation of the ERC721 Token 'BreakfastFoodsNFTUpgradeable'.
  */
-contract BreakfastFoodsNFTUpgradeable is
+contract BreakfastFoodsNFTUpgradeableV2 is
     Initializable,
     OwnableUpgradeable,
     ERC721Upgradeable
 {
-    uint256 public tokenSupply = 0;
+    uint256 public tokenSupply;
     uint256 public constant MAX_TOKEN_SUPPLY = 10;
 
     /**

@@ -2,15 +2,25 @@
 
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+
+interface IBreakfastCoinStaking {
+    function addMintingAddress(address minter) external;
+
+    function mintToAddress(uint amount, address to) external;
+}
 
 /**
  * @dev 'BreakfastFoodsNFTStaking' implementation of the 'BreakfastFoodsNFT' token.
  *
  * Users may stake their NFTs to receieve 10 'BreakfastFoodCoin' tokens every 24 hours.
  */
-contract BreakfastFoodsNFTStaking is ERC721 {
-    uint256 public tokenSupply = 0;
+contract BreakfastFoodsNFTStakingUpgradeable is
+    Initializable,
+    ERC721Upgradeable
+{
+    uint256 public tokenSupply;
     uint256 public constant MAX_TOKEN_SUPPLY = 10;
     uint256 public constant REWARD_PERIOD = 24 hours;
 
@@ -20,15 +30,18 @@ contract BreakfastFoodsNFTStaking is ERC721 {
     // Token ID => Earliest withdrawal time
     mapping(uint256 => uint256) private _withdrawalTimes;
 
-    BreakfastCoinStaking public breakfastCoinContract;
+    IBreakfastCoinStaking public breakfastCoinContract;
 
     /**
-     * @dev Sets value of `breakfastCoinContract`.
+     * @dev Initializes ERC721 token and sets breakfast coin contract.
      */
-    constructor(address breakfastCoinContractAddress)
-        ERC721("BreakfastFoods", "BRKFST")
+    function initialize(address breakfastCoinContractAddress)
+        external
+        initializer
     {
-        breakfastCoinContract = BreakfastCoinStaking(
+        __ERC721_init("BreakfastFoods", "BRKFST");
+
+        breakfastCoinContract = IBreakfastCoinStaking(
             breakfastCoinContractAddress
         );
     }
