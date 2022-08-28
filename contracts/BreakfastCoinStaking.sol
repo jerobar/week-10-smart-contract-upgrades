@@ -2,22 +2,20 @@
 
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
- * @dev Upgradeable implementation of the ERC20 Token 'BreakfastCoin'.
+ * @dev Implementation of the ERC20 Token Standard for 'BreakfastCoinStaking'.
  */
-contract BreakfastCoinUpgradeable is Initializable, ERC20Upgradeable {
-    // Address => bool can mint
+contract BreakfastCoinStaking is ERC20 {
     mapping(address => bool) private _mintingAddresses;
 
     /**
-     * @dev Initializes ERC20 token and adds `msg.sender` to `_mintingAddress`.
+     * @dev Calls `ERC20` constructor to set valus for {_name} and {_symbol},
+     * sets `_deployer` to `msg.sender` and adds `_deployer` to list of
+     * approved minters.
      */
-    function initialize() external initializer {
-        __ERC20_init("BreakfastCoin", "BRKFST");
-
+    constructor() ERC20("BreakfastCoin", "BRKFST") {
         _mintingAddresses[msg.sender] = true;
     }
 
@@ -37,7 +35,7 @@ contract BreakfastCoinUpgradeable is Initializable, ERC20Upgradeable {
      *
      * Requirements:
      *
-     * - `msg.sender` is an approved minting address
+     * - `canMint` modifier
      */
     function addMintingAddress(address minter) external canMint(msg.sender) {
         _mintingAddresses[minter] = true;
@@ -48,7 +46,7 @@ contract BreakfastCoinUpgradeable is Initializable, ERC20Upgradeable {
      *
      * Requirements:
      *
-     * - `msg.sender` is an approved minting address
+     * - `canMint` modifier
      */
     function mintToAddress(uint amount, address to)
         public

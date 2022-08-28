@@ -2,15 +2,16 @@
 
 pragma solidity 0.8.7;
 
-import "./BreakfastFoodsNFTFree.sol";
-import "./BreakfastCoinStaking.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 /**
  * @dev 'BreakfastFoodsNFTStaking' implementation of the 'BreakfastFoodsNFT' token.
  *
  * Users may stake their NFTs to receieve 10 'BreakfastFoodCoin' tokens every 24 hours.
  */
-contract BreakfastFoodsNFTStaking is BreakfastFoodsNFTFree {
+contract BreakfastFoodsNFTStaking is ERC721 {
+    uint256 public tokenSupply = 0;
+    uint256 public constant MAX_TOKEN_SUPPLY = 10;
     uint256 public constant REWARD_PERIOD = 24 hours;
 
     // Token ID => Staker address
@@ -24,10 +25,38 @@ contract BreakfastFoodsNFTStaking is BreakfastFoodsNFTFree {
     /**
      * @dev Sets value of `breakfastCoinContract`.
      */
-    constructor(address breakfastCoinContractAddress) {
+    constructor(address breakfastCoinContractAddress)
+        ERC721("BreakfastFoods", "BRKFST")
+    {
         breakfastCoinContract = BreakfastCoinStaking(
             breakfastCoinContractAddress
         );
+    }
+
+    /**
+     * @dev Overrides `_baseURI` to set NFT collection URI.
+     *
+     * Returns string ipfs directory URI.
+     */
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs://QmaPrXV1mGXxNKyyuSjBKDAwwfmjYbkDn5wvDWMaKSWg9M/";
+    }
+
+    /**
+     * @dev Mints token `tokenSupply` to `msg.sender`.
+     *
+     * Requirements:
+     *
+     * - `tokenSupply` < `MAX_TOKEN_SUPPLY`
+     */
+    function mint() external {
+        require(
+            tokenSupply < MAX_TOKEN_SUPPLY,
+            "BreakfastFoodsNFTFree: Token supply cap met"
+        );
+
+        _mint(msg.sender, tokenSupply);
+        tokenSupply += 1;
     }
 
     /**
